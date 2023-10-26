@@ -1,0 +1,3 @@
+./configure;
+gmake;
+gmake install;

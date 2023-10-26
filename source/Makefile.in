@@ -1,0 +1,1158 @@
+# source/Makefile.in
+#
+# BitchX/source/Makefile
+# Copyright Colten Edwards 1999
+
+SHELL = @SHELL@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+top_srcdir = @top_srcdir@
+topdir = @topdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = @oldincludedir@
+
+local_dir = $(HOME)
+
+# Where the BitchX binary will be installed.
+# "make install" will compile and install the program.
+INSTALL_IRC = @INSTALL_IRC@
+
+# Where the BitchX library will be. Generally this is the place that
+# you put the scripts, help pages and translation tables. It is
+# very important that you set this correctly.
+IRCLIB = @IRCLIB@
+
+CC = @CC@
+CPPFLAGS = @CPPFLAGS@ @INCLUDES@ @DEFS@
+LIBS = @LIBS@
+
+# Tcl library.
+TCL_LIBS = @TCL_LIBS@
+
+# These are for Tcl support.
+TCL_OBJS = @TCL_OBJS@
+# You don't have the following, so you'll want to leave this blank.
+TCL_SRCS = @TCL_SRCS@
+
+# Set this to -g if you want to be able to debug the client, otherwise
+# use -O to have the compiler do some optimization instead.
+CFLAGS = @CFLAGS@
+
+# Set this to -s if you want the binary to be stripped.
+LDFLAGS = @LDFLAGS@
+
+# These are for the cd device player.
+CD_SRCS = @CD_SRCS@
+CD_OBJS = @CD_OBJS@
+
+# This is the executable suffix for the target operating system.
+EXEEXT = @EXEEXT@
+
+# Extra files.
+DEFAULT_CTOOLZ_DIR = @DEFAULT_CTOOLZ_DIR@
+DEFAULT_MSGLOGFILE = @DEFAULT_MSGLOGFILE@
+DEFAULT_BITCHX_HELP_FILE = @DEFAULT_BITCHX_HELP_FILE@
+DEFAULT_SCRIPT_HELP_FILE = @DEFAULT_SCRIPT_HELP_FILE@
+DEFAULT_BITCHX_KICK_FILE = @DEFAULT_BITCHX_KICK_FILE@
+DEFAULT_BITCHX_QUIT_FILE = @DEFAULT_BITCHX_QUIT_FILE@
+DEFAULT_BITCHX_IRCNAME_FILE = @DEFAULT_BITCHX_IRCNAME_FILE@
+
+# Full path of the directory for BitchX help files.
+HELPDIR = @HELPDIR@
+
+# Full path of the directory for the BitchX scripts.
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+
+# Default setting for IRCPATH where BitchX will look for
+# its script files if the environment variable is undefined.
+# Usually, this should contain the same path as used for INSTALL_SCRIPT in
+# the Makefile, but it can contain multiple path elements
+# separated by colons. The path MUST lead to an existing directory,
+# because the 'global' script is expected to be found there.
+IRCPATH = @IRCPATH@
+
+# Path for TRANSLATION variable.
+TRANSLATION_PATH = @TRANSLATION_PATH@
+
+# This is where the optional plugins will be copied to.
+PLUGINDIR = @PLUGINDIR@
+
+# Plugin flags.
+SHLIB_LD = @SHLIB_LD@
+SHLIB_CFLAGS = @SHLIB_CFLAGS@
+SHLIB_SUFFIX = @SHLIB_SUFFIX@
+
+# This command will be used to install the BitchX files on Win32/OS2EMX
+# systems.
+WINNT_INSTALL = @WINNT_INSTALL@
+
+# This program allows you to use screen/xterm's to put new BitchX windows
+# on new screen/xterm windows.
+INSTALL_WSERV = @INSTALL_WSERV@
+
+# This program allows you to screen BitchX and reattach to it later.
+INSTALL_SCRBX = @INSTALL_SCRBX@
+
+# Set gzip and bzip2 options.
+GZIP_ENV = @GZIP_ENV@
+BZIP2 = @BZIP2@
+
+# Standard programs.
+RM = @RM@
+LN = @LN_S@
+CP = @CP@
+MV = @MV@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+
+VERSION = @VERSION@
+_VERSION_ = @_VERSION_@
+
+MAKE_BIN = @MAKE@
+MAKE = $(MAKE_BIN) $(MFLAGS)
+MFLAGS = \
+	'local_dir=$(HOME)'			\
+	'INSTALL_IRC=$(INSTALL_IRC)'		\
+	'IRCLIB=$(IRCLIB)'			\
+	'CC=$(CC)'				\
+	'CFLAGS=$(CFLAGS)'			\
+	'HELPDIR=$(HELPDIR)'			\
+        'INSTALL_WSERV=$(INSTALL_WSERV)'	\
+	'IRCPATH=$(IRCPATH)'			\
+	'TRANSLATION_PATH=$(TRANSLATION_PATH)'	\
+	'LDFLAGS=$(LDFLAGS)'			\
+	'LIBS=$(LIBS)'				\
+	'LN=$(LN)'				\
+	'RM=$(RM)'				\
+	'TCL_SRCS=$(TCL_SRCS)'			\
+	'TCL_OBJS=$(TCL_OBJS)'			\
+	'CD_PLAY=$(CD_PLAY)'			\
+	'CD_SRCS=$(CD_SRCS)'			\
+	'CD_OBJS=$(CD_OBJS)'			\
+	'TCL_LIBS=$(TCL_LIBS)'			\
+	'PLUGINDIR=$(PLUGINDIR)'		\
+	'_VERSION_=$(_VERSION_)'		\
+	'VERSION=$(VERSION)'			\
+	'INSTALL_DATA=$(INSTALL_DATA)'		\
+	'INSTALL_SCRIPT=$(INSTALL_SCRIPT)'	\
+	'EXEEXT=$(EXEEXT)'			\
+	'SHLIB_CFLAGS=$(SHLIB_CFLAGS)'		\
+	'SHLIB_SUFFIX=$(SHLIB_SUFFIX)'
+
+## Makefile starts here.
+
+TARGET = BitchX$(EXEEXT) gtkBitchX$(EXEEXT) PMBitchX$(EXEEXT) WinBitchX$(EXEEXT)
+
+OBJECTS = alias.o alist.o @ALLOCA@ array.o art.o banlist.o bot_link.o cdcc.o \
+	cdns.o @CD_OBJS@ chelp.o commands.o commands2.o compat.o cset.o \
+	ctcp.o dcc.o debug.o encrypt.o exec.o files.o flood.o fset.o \
+	functions.o funny.o glob.o hash.o hebrew.o help.o history.o hook.o \
+	if.o ignore.o input.o irc.o ircaux.o ircsig.o keys.o lastlog.o list.o \
+	log.o mail.o misc.o modules.o names.o network.o newio.o notice.o \
+	notify.o numbers.o output.o parse.o queue.o readlog.o reg.o screen.o \
+	server.o stack.o status.o struct.o tcl_public.o term.o timer.o \
+	translat.o user.o userlist.o vars.o who.o whowas.o window.o words.o \
+	@X_O@
+
+WSERV_OBJECTS = wterm.o wnetwork.o ircsig.o compat.o wserv.o
+SCRBX_OBJECTS = sterm.o ircsig.o compat.o scr-bx.o
+
+SOURCES = $(OBJECTS:%.o=%.c) #$(TCL_SRCS)
+
+all: $(_VERSION_) wserv$(EXEEXT) scr-bx$(EXEEXT)
+
+../include/../.config.h:
+	touch $@
+
+Makefile: $(srcdir)/Makefile.in
+	cd $(topdir) \
+	  && $(SHELL) ./config.status
+.c.o:
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+
+$(_VERSION_): $(OBJECTS) $(TCL_OBJS)
+	$(CC) $(LDFLAGS) -o $(_VERSION_)$(EXEEXT) $(OBJECTS) $(TCL_OBJS) $(LIBS)
+
+install:
+	@echo We don\'t want you installing from this directory.
+	@echo Please \"$(MAKE_BIN) install\" from the toplevel directory instead.
+
+clean::
+	-$(RM) $(_VERSION_)$(EXEEXT) $(OBJECTS) sterm.o wterm.o $(TARGET)
+	-$(RM) $(srcdir)/sterm.c $(srcdir)/wterm.c
+	-$(RM) *~ core a.out debug.out gmon.out conftest* *.o
+
+distclean: clean
+	-$(RM) Makefile
+	-$(RM) $(TCL_OBJS)
+
+# .o files needing special compilation flags
+
+irc.o: Makefile ../Makefile
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+	-DIRCLIB=\"$(IRCLIB)\" -DIRCPATH=\"$(IRCPATH)\" -c $(srcdir)/irc.c
+
+ircaux.o: Makefile ../Makefile
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+	-DIRCLIB=\"$(IRCLIB)\" -DSHLIB_SUFFIX=\"$(SHLIB_SUFFIX)\" -c $(srcdir)/ircaux.c
+
+modules.o: Makefile ../Makefile
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+	-DPLUGINDIR=\"$(IRCLIB)/plugins\" -DSHLIB_SUFFIX=\"$(SHLIB_SUFFIX)\" -c $(srcdir)/modules.c
+
+notice.o: Makefile ../Makefile
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+	-DSCRIPT_PATH=\"$(INSTALL_SCRIPT)\" -c $(srcdir)/notice.c
+
+screen.o: Makefile ../Makefile
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+	-DWSERV_PATH=\"$(INSTALL_WSERV)\" -c $(srcdir)/screen.c
+
+term.o: @GUI_SRCS@
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $(srcdir)/term.c
+
+translat.o: Makefile ../Makefile
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+	-DTRANSLATION_PATH=\"$(TRANSLATION_PATH)\" -c $(srcdir)/translat.c
+
+$(topdir)/source/compat.o: $(top_srcdir)/source/compat.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+		-c $(top_srcdir)/source/compat.c
+
+# wserv
+wterm.o: $(srcdir)/term.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DWTERM_C -c $(srcdir)/term.c -o $@
+
+wnetwork.o: $(srcdir)/network.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DWTERM_C -c $(srcdir)/network.c -o $@
+
+wserv$(EXEEXT): $(WSERV_OBJECTS)
+	$(CC) $(LDFLAGS) -o wserv$(EXEEXT) $(WSERV_OBJECTS) $(LIBS)
+
+clean::
+	-$(RM) wserv$(EXEEXT)
+
+# scr-bx
+sterm.o: $(srcdir)/term.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DSTERM_C -c $(srcdir)/term.c -o $@
+
+scr-bx$(EXEEXT): $(SCRBX_OBJECTS)
+	$(CC) $(LDFLAGS) -o scr-bx$(EXEEXT) $(SCRBX_OBJECTS) $(LIBS)
+
+clean::
+	-$(RM) scr-bx$(EXEEXT)
+
+depend: $(SOURCES)
+	cd $(top_srcdir)/source
+	echo "Making dependencies. This takes a while."
+	sed -n '1,/^# Dont even THINK of deleting this line$$/p' < Makefile.in > tmp
+	$(CC) -I../include $(CPPFLAGS) $(CFLAGS) -MM *.c >> tmp
+	$(CC) -I../include $(CPPFLAGS) $(CFLAGS) -DWTERM_C -MM -MT wterm.o term.c >> tmp
+	$(CC) -I../include $(CPPFLAGS) $(CFLAGS) -DWTERM_C -MM -MT wnetwork.o network.c >> tmp
+	$(CC) -I../include $(CPPFLAGS) $(CFLAGS) -DSTERM_C -MM -MT sterm.o term.c >> tmp
+	$(MV) tmp Makefile.in
+
+# Dont even THINK of deleting this line
+alias.o: alias.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/alist.h ../include/ircaux.h \
+ ../include/array.h ../include/commands.h ../include/files.h \
+ ../include/history.h ../include/hook.h ../include/input.h \
+ ../include/ircaux.h ../include/names.h ../include/window.h \
+ ../include/lastlog.h ../include/notify.h ../include/alist.h \
+ ../include/output.h ../include/parse.h ../include/screen.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/struct.h ../include/notify.h ../include/status.h \
+ ../include/vars.h ../include/cset.h ../include/window.h \
+ ../include/list.h ../include/keys.h ../include/misc.h ../include/newio.h \
+ ../include/stack.h ../include/hook.h ../include/alias.h \
+ ../include/module.h ../include/timer.h ../include/modval.h \
+ ../include/module.h expr2.c ../include/debug.h expr.c
+alist.o: alist.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/alist.h ../include/ircaux.h ../include/irc.h \
+ ../include/ircaux.h ../include/output.h ../include/modval.h \
+ ../include/module.h ../include/struct.h ../include/hash.h
+alloca.o: alloca.c
+array.o: array.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/array.h ../include/ircaux.h ../include/irc.h \
+ ../include/output.h ../include/modval.h ../include/module.h \
+ ../include/struct.h ../include/hash.h
+art.o: art.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/output.h ../include/modval.h ../include/module.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h
+banlist.o: banlist.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/commands.h ../include/list.h ../include/hook.h \
+ ../include/ignore.h ../include/ircaux.h ../include/output.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/window.h ../include/who.h \
+ ../include/whowas.h ../include/vars.h ../include/cset.h \
+ ../include/userlist.h ../include/misc.h ../include/timer.h \
+ ../include/hash2.h ../include/whowas.h ../include/cset.h \
+ ../include/modval.h ../include/module.h
+bot_link.o: bot_link.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/ircaux.h ../include/irc.h \
+ ../include/struct.h ../include/hash.h ../include/commands.h \
+ ../include/dcc.h ../include/struct.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/window.h \
+ ../include/lastlog.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/output.h ../include/list.h \
+ ../include/who.h ../include/ctcp.h ../include/tcl_bx.h \
+ ../include/status.h ../include/vars.h ../include/cset.h \
+ ../include/misc.h ../include/userlist.h ../include/hash2.h \
+ ../include/whowas.h ../include/modval.h ../include/module.h
+cdcc.o: cdcc.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/ircaux.h ../include/irc.h ../include/struct.h \
+ ../include/hash.h ../include/commands.h ../include/ignore.h \
+ ../include/hook.h ../include/dcc.h ../include/struct.h \
+ ../include/flood.h ../include/screen.h ../include/window.h \
+ ../include/lastlog.h ../include/parse.h ../include/output.h \
+ ../include/input.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/list.h ../include/userlist.h ../include/misc.h \
+ ../include/who.h ../include/cdcc.h ../include/modval.h \
+ ../include/module.h
+cdns.o: cdns.c ../include/cdns.h ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/hash.h ../include/irc.h \
+ ../include/commands.h ../include/struct.h ../include/newio.h \
+ ../include/modval.h ../include/module.h
+cdrom.o: cdrom.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/cdrom.h ../include/output.h \
+ ../include/misc.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/modval.h ../include/module.h
+chelp.o: chelp.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/chelp.h ../include/output.h \
+ ../include/hook.h ../include/misc.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/window.h ../include/lastlog.h \
+ ../include/modval.h ../include/module.h
+commands2.o: commands2.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/parse.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/chelp.h ../include/commands.h \
+ ../include/vars.h ../include/cset.h ../include/ircaux.h \
+ ../include/lastlog.h ../include/log.h ../include/window.h \
+ ../include/screen.h ../include/ircterm.h ../include/screen.h \
+ ../include/translat.h ../include/who.h ../include/hook.h \
+ ../include/input.h ../include/ignore.h ../include/keys.h \
+ ../include/names.h ../include/alias.h ../include/array.h \
+ ../include/history.h ../include/funny.h ../include/ctcp.h \
+ ../include/output.h ../include/exec.h ../include/notify.h \
+ ../include/status.h ../include/if.h ../include/help.h ../include/stack.h \
+ ../include/hook.h ../include/alias.h ../include/queue.h \
+ ../include/timer.h ../include/list.h ../include/misc.h \
+ ../include/userlist.h ../include/whowas.h ../include/flood.h \
+ ../include/hash2.h ../include/whowas.h ../include/notice.h \
+ ../include/gui.h ../include/modval.h ../include/module.h
+commands.o: commands.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/commands.h ../include/parse.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/window.h \
+ ../include/lastlog.h ../include/struct.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/chelp.h \
+ ../include/encrypt.h ../include/vars.h ../include/cset.h \
+ ../include/ircaux.h ../include/lastlog.h ../include/log.h \
+ ../include/window.h ../include/screen.h ../include/ircterm.h \
+ ../include/screen.h ../include/translat.h ../include/who.h \
+ ../include/hook.h ../include/input.h ../include/ignore.h \
+ ../include/keys.h ../include/names.h ../include/alias.h \
+ ../include/history.h ../include/funny.h ../include/ctcp.h \
+ ../include/dcc.h ../include/output.h ../include/exec.h \
+ ../include/notify.h ../include/numbers.h ../include/status.h \
+ ../include/if.h ../include/help.h ../include/stack.h ../include/hook.h \
+ ../include/alias.h ../include/queue.h ../include/timer.h \
+ ../include/list.h ../include/userlist.h ../include/misc.h \
+ ../include/alist.h ../include/tcl_bx.h ../include/hash2.h \
+ ../include/whowas.h ../include/cset.h ../include/notice.h \
+ ../include/module.h ../include/translat.h ../include/modval.h \
+ ../include/module.h
+compat.o: compat.c ../include/irc_std.h ../include/defs.h
+cset.o: cset.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/window.h \
+ ../include/lastlog.h ../include/screen.h ../include/window.h \
+ ../include/names.h ../include/log.h ../include/ircaux.h \
+ ../include/status.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/output.h ../include/misc.h \
+ ../include/list.h ../include/cset.h ../include/hash2.h \
+ ../include/whowas.h ../include/modval.h ../include/module.h
+ctcp.o: ctcp.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/encrypt.h ../include/ctcp.h ../include/dcc.h \
+ ../include/struct.h ../include/commands.h ../include/flood.h \
+ ../include/hook.h ../include/if.h ../include/ignore.h \
+ ../include/ircaux.h ../include/lastlog.h ../include/list.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/output.h ../include/parse.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/status.h \
+ ../include/vars.h ../include/cset.h ../include/window.h \
+ ../include/cdcc.h ../include/misc.h ../include/userlist.h \
+ ../include/hash2.h ../include/whowas.h ../include/tcl_bx.h \
+ ../include/modval.h ../include/module.h
+dcc.o: dcc.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/ctcp.h \
+ ../include/encrypt.h ../include/cdcc.h ../include/dcc.h \
+ ../include/struct.h ../include/hook.h ../include/ircaux.h \
+ ../include/lastlog.h ../include/list.h ../include/newio.h \
+ ../include/output.h ../include/parse.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/window.h \
+ ../include/lastlog.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/status.h ../include/vars.h \
+ ../include/cset.h ../include/who.h ../include/window.h \
+ ../include/screen.h ../include/misc.h ../include/tcl_bx.h \
+ ../include/userlist.h ../include/hash2.h ../include/whowas.h \
+ ../include/gui.h ../include/modval.h ../include/module.h
+debug.o: debug.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/output.h ../include/misc.h \
+ ../include/window.h ../include/lastlog.h ../include/hook.h \
+ ../include/lastlog.h ../include/cset.h ../include/struct.h \
+ ../include/screen.h ../include/window.h ../include/input.h \
+ ../include/status.h ../include/vars.h ../include/cset.h \
+ ../include/modval.h ../include/module.h ../include/color.h
+encrypt.o: encrypt.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/encrypt.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/ircaux.h ../include/list.h \
+ ../include/output.h ../include/newio.h ../include/modval.h \
+ ../include/module.h
+exec.o: exec.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/exec.h \
+ ../include/vars.h ../include/cset.h ../include/struct.h \
+ ../include/ircaux.h ../include/commands.h ../include/window.h \
+ ../include/lastlog.h ../include/screen.h ../include/window.h \
+ ../include/hook.h ../include/input.h ../include/list.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/output.h ../include/parse.h ../include/newio.h \
+ ../include/gui.h ../include/modval.h ../include/module.h
+expr2.o: expr2.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/debug.h
+expr.o: expr.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h
+files.o: files.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/ircaux.h ../include/irc.h ../include/modval.h \
+ ../include/module.h ../include/struct.h ../include/hash.h
+flood.o: flood.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/hook.h ../include/ircaux.h \
+ ../include/ignore.h ../include/flood.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/output.h \
+ ../include/list.h ../include/misc.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/userlist.h ../include/timer.h ../include/status.h \
+ ../include/hash2.h ../include/whowas.h ../include/cset.h \
+ ../include/modval.h ../include/module.h
+fset.o: fset.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alist.h ../include/ircaux.h ../include/ircaux.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/hook.h ../include/output.h ../include/misc.h \
+ ../include/list.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/tcl_bx.h ../include/modval.h \
+ ../include/module.h ../include/color.h
+functions.o: functions.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/alist.h ../include/ircaux.h \
+ ../include/array.h ../include/dcc.h ../include/struct.h \
+ ../include/commands.h ../include/files.h ../include/history.h \
+ ../include/hook.h ../include/ignore.h ../include/input.h \
+ ../include/ircaux.h ../include/names.h ../include/window.h \
+ ../include/lastlog.h ../include/output.h ../include/list.h \
+ ../include/parse.h ../include/screen.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/notify.h \
+ ../include/alist.h ../include/status.h ../include/vars.h \
+ ../include/cset.h ../include/window.h ../include/ircterm.h \
+ ../include/screen.h ../include/translat.h ../include/notify.h \
+ ../include/misc.h ../include/userlist.h ../include/numbers.h \
+ ../include/hash2.h ../include/whowas.h ../include/cset.h \
+ ../include/log.h ../include/gui.h ../include/modval.h \
+ ../include/module.h ../include/options.h ../include/tcl_bx.h
+funny.o: funny.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/hook.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/funny.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/lastlog.h ../include/output.h ../include/parse.h \
+ ../include/status.h ../include/misc.h ../include/screen.h \
+ ../include/modval.h ../include/module.h
+glob.o: glob.c ../include/defs.h ../include/config.h ../include/defs.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/ircaux.h \
+ ../include/irc.h ../include/config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/modval.h ../include/module.h \
+ ../include/struct.h ../include/hash.h
+gtkbitchx.o: gtkbitchx.c ../include/ircaux.h ../include/irc.h \
+ ../include/defs.h ../include/config.h ../include/../.config.h \
+ ../include/bsdglob.h ../include/irc_std.h ../include/debug.h \
+ ../include/newio.h ../include/ssl.h ../include/misc.h \
+ ../include/window.h ../include/lastlog.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/window.h \
+ ../include/struct.h ../include/hash.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/hook.h \
+ ../include/input.h ../include/commands.h ../include/list.h \
+ ../include/hash2.h ../include/whowas.h ../include/gui.h \
+ ../include/newio.h ../doc/BitchX.xpm ../include/keys.h
+hash.o: hash.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/hook.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/output.h \
+ ../include/misc.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/list.h ../include/window.h ../include/hash.h \
+ ../include/hash2.h ../include/whowas.h ../include/modval.h \
+ ../include/module.h
+hebrew.o: hebrew.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/ircaux.h ../include/irc.h ../include/modval.h \
+ ../include/module.h ../include/struct.h ../include/hash.h
+help.o: help.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/help.h \
+ ../include/input.h ../include/ircaux.h ../include/hook.h \
+ ../include/output.h ../include/screen.h ../include/window.h \
+ ../include/lastlog.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/struct.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/ircterm.h \
+ ../include/screen.h ../include/translat.h ../include/vars.h \
+ ../include/cset.h ../include/window.h ../include/bsdglob.h \
+ ../include/modval.h ../include/module.h
+history.o: history.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/history.h ../include/output.h \
+ ../include/input.h ../include/modval.h ../include/module.h
+hook.o: hook.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/hook.h \
+ ../include/vars.h ../include/cset.h ../include/struct.h \
+ ../include/ircaux.h ../include/if.h ../include/alias.h ../include/list.h \
+ ../include/window.h ../include/lastlog.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/window.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/output.h ../include/commands.h ../include/parse.h \
+ ../include/misc.h ../include/stack.h ../include/hook.h \
+ ../include/alias.h ../include/tcl_bx.h ../include/modval.h \
+ ../include/module.h
+if.o: if.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/ircaux.h ../include/window.h \
+ ../include/lastlog.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/output.h ../include/if.h \
+ ../include/commands.h ../include/misc.h ../include/modval.h \
+ ../include/module.h
+ignore.o: ignore.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ignore.h ../include/ircaux.h ../include/list.h \
+ ../include/input.h ../include/screen.h ../include/window.h \
+ ../include/lastlog.h ../include/misc.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/output.h \
+ ../include/modval.h ../include/module.h
+input.o: input.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/commands.h ../include/exec.h \
+ ../include/history.h ../include/bsdglob.h ../include/hook.h \
+ ../include/input.h ../include/ircaux.h ../include/keys.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/ircterm.h ../include/screen.h \
+ ../include/translat.h ../include/list.h ../include/vars.h \
+ ../include/cset.h ../include/misc.h ../include/output.h \
+ ../include/chelp.h ../include/dcc.h ../include/cdcc.h \
+ ../include/whowas.h ../include/tcl_bx.h ../include/window.h \
+ ../include/status.h ../include/hash2.h ../include/whowas.h \
+ ../include/translat.h ../include/modval.h ../include/module.h
+ircaux.o: ircaux.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/log.h ../include/misc.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/screen.h \
+ ../include/window.h ../include/lastlog.h ../include/ircaux.h \
+ ../include/output.h ../include/ircterm.h ../include/screen.h \
+ ../include/translat.h ../include/modval.h ../include/module.h
+irc.o: irc.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/status.h ../include/dcc.h ../include/struct.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/vars.h ../include/cset.h ../include/input.h \
+ ../include/alias.h ../include/output.h ../include/ircterm.h \
+ ../include/screen.h ../include/translat.h ../include/exec.h \
+ ../include/flood.h ../include/screen.h ../include/log.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/hook.h ../include/keys.h ../include/ircaux.h \
+ ../include/commands.h ../include/window.h ../include/history.h \
+ ../include/notify.h ../include/mail.h ../include/debug.h \
+ ../include/newio.h ../include/timer.h ../include/whowas.h \
+ ../include/misc.h ../include/gui.h ../include/cdns.h ../include/tcl_bx.h \
+ ../include/ssl.h ../include/modval.h ../include/module.h
+ircsig.o: ircsig.c ../include/irc_std.h ../include/defs.h
+keys.o: keys.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/config.h ../include/commands.h ../include/history.h \
+ ../include/ircaux.h ../include/input.h ../include/keys.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/output.h ../include/screen.h ../include/ircterm.h \
+ ../include/screen.h ../include/translat.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/window.h \
+ ../include/modval.h ../include/module.h
+lastlog.o: lastlog.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/lastlog.h ../include/window.h ../include/lastlog.h \
+ ../include/screen.h ../include/window.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/ircaux.h \
+ ../include/output.h ../include/misc.h ../include/hook.h \
+ ../include/status.h ../include/modval.h ../include/module.h
+list.o: list.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/list.h \
+ ../include/ircaux.h ../include/modval.h ../include/module.h \
+ ../include/struct.h
+log.o: log.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/log.h \
+ ../include/vars.h ../include/cset.h ../include/struct.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/misc.h ../include/output.h ../include/ircaux.h \
+ ../include/modval.h ../include/module.h
+mail.o: mail.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/mail.h \
+ ../include/lastlog.h ../include/hook.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/ircaux.h \
+ ../include/output.h ../include/window.h ../include/lastlog.h \
+ ../include/status.h ../include/misc.h ../include/module.h \
+ ../include/modval.h ../include/module.h
+misc.o: misc.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/window.h ../include/lastlog.h ../include/struct.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/dcc.h ../include/commands.h ../include/vars.h \
+ ../include/cset.h ../include/ircaux.h ../include/lastlog.h \
+ ../include/window.h ../include/screen.h ../include/who.h \
+ ../include/hook.h ../include/input.h ../include/ignore.h \
+ ../include/keys.h ../include/names.h ../include/alias.h \
+ ../include/history.h ../include/funny.h ../include/ctcp.h \
+ ../include/output.h ../include/exec.h ../include/notify.h \
+ ../include/status.h ../include/list.h ../include/timer.h \
+ ../include/userlist.h ../include/misc.h ../include/gui.h \
+ ../include/cdns.h ../include/flood.h ../include/parse.h \
+ ../include/whowas.h ../include/hash2.h ../include/whowas.h \
+ ../include/cset.h ../include/if.h ../include/modval.h \
+ ../include/module.h
+modules.o: modules.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/encrypt.h ../include/commands.h \
+ ../include/dcc.h ../include/struct.h ../include/input.h \
+ ../include/ircaux.h ../include/flood.h ../include/hook.h \
+ ../include/list.h ../include/output.h ../include/log.h ../include/ctcp.h \
+ ../include/cdcc.h ../include/misc.h ../include/module.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/hash2.h ../include/whowas.h ../include/vars.h \
+ ../include/cset.h ../include/screen.h ../include/parse.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/timer.h ../include/status.h ../include/window.h \
+ ../include/tcl_bx.h ../include/modval.h ../include/module.h \
+ ../include/dlfcn.h
+names.o: names.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/names.h ../include/window.h \
+ ../include/lastlog.h ../include/flood.h ../include/window.h \
+ ../include/screen.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/struct.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/lastlog.h \
+ ../include/list.h ../include/output.h ../include/userlist.h \
+ ../include/timer.h ../include/input.h ../include/hook.h \
+ ../include/parse.h ../include/whowas.h ../include/misc.h \
+ ../include/vars.h ../include/cset.h ../include/keys.h \
+ ../include/tcl_bx.h ../include/status.h ../include/hash2.h \
+ ../include/whowas.h ../include/cset.h ../include/gui.h \
+ ../include/modval.h ../include/module.h
+network.o: network.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/output.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/modval.h \
+ ../include/module.h
+newio.o: newio.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/ircaux.h ../include/irc.h ../include/output.h \
+ ../include/modval.h ../include/module.h ../include/struct.h \
+ ../include/hash.h
+notice.o: notice.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/commands.h ../include/who.h ../include/ctcp.h \
+ ../include/window.h ../include/lastlog.h ../include/lastlog.h \
+ ../include/log.h ../include/flood.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/ircaux.h ../include/hook.h \
+ ../include/ignore.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/funny.h \
+ ../include/output.h ../include/names.h ../include/parse.h \
+ ../include/notify.h ../include/misc.h ../include/screen.h \
+ ../include/status.h ../include/notice.h ../include/hash2.h \
+ ../include/whowas.h ../include/cset.h ../include/input.h \
+ ../include/modval.h ../include/module.h
+notify.o: notify.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/list.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/ircaux.h ../include/who.h ../include/hook.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/window.h ../include/lastlog.h ../include/struct.h \
+ ../include/notify.h ../include/output.h ../include/vars.h \
+ ../include/cset.h ../include/timer.h ../include/misc.h \
+ ../include/status.h ../include/userlist.h ../include/hash2.h \
+ ../include/whowas.h ../include/cset.h ../include/modval.h \
+ ../include/module.h
+numbers.o: numbers.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/dcc.h ../include/struct.h ../include/input.h \
+ ../include/commands.h ../include/ircaux.h ../include/vars.h \
+ ../include/cset.h ../include/lastlog.h ../include/list.h \
+ ../include/hook.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/who.h ../include/numbers.h ../include/window.h \
+ ../include/screen.h ../include/output.h ../include/names.h \
+ ../include/notify.h ../include/whowas.h ../include/funny.h \
+ ../include/parse.h ../include/misc.h ../include/status.h \
+ ../include/timer.h ../include/userlist.h ../include/tcl_bx.h \
+ ../include/gui.h ../include/modval.h ../include/module.h
+output.o: output.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/output.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/input.h ../include/ircaux.h \
+ ../include/ircterm.h ../include/screen.h ../include/window.h \
+ ../include/lastlog.h ../include/translat.h ../include/lastlog.h \
+ ../include/window.h ../include/screen.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/hook.h \
+ ../include/log.h ../include/misc.h ../include/modval.h \
+ ../include/module.h
+parse.o: parse.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/names.h ../include/vars.h \
+ ../include/cset.h ../include/cdcc.h ../include/ctcp.h ../include/hook.h \
+ ../include/log.h ../include/commands.h ../include/ignore.h \
+ ../include/who.h ../include/lastlog.h ../include/input.h \
+ ../include/ircaux.h ../include/funny.h ../include/flood.h \
+ ../include/window.h ../include/screen.h ../include/output.h \
+ ../include/numbers.h ../include/parse.h ../include/notify.h \
+ ../include/status.h ../include/list.h ../include/userlist.h \
+ ../include/misc.h ../include/whowas.h ../include/timer.h \
+ ../include/keys.h ../include/hash2.h ../include/whowas.h \
+ ../include/cset.h ../include/module.h ../include/gui.h \
+ ../include/tcl_bx.h ../include/modval.h ../include/module.h
+pmbitchx.o: pmbitchx.c ../include/window.h ../include/irc_std.h \
+ ../include/defs.h ../include/lastlog.h ../include/gui.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/window.h ../include/irc.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/debug.h \
+ ../include/newio.h ../include/ssl.h ../include/struct.h \
+ ../include/hash.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/hook.h ../include/list.h \
+ ../include/commands.h ../include/hash2.h ../include/whowas.h \
+ ../include/status.h ../include/input.h ../include/keys.h
+queue.o: queue.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/alias.h ../include/commands.h ../include/ircaux.h \
+ ../include/queue.h ../include/output.h ../include/modval.h \
+ ../include/module.h ../include/struct.h
+readlog.o: readlog.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/window.h ../include/lastlog.h ../include/struct.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/vars.h ../include/cset.h ../include/ircaux.h \
+ ../include/input.h ../include/window.h ../include/screen.h \
+ ../include/output.h ../include/status.h ../include/misc.h \
+ ../include/modval.h ../include/module.h
+reg.o: reg.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/ircaux.h ../include/irc.h ../include/output.h \
+ ../include/modval.h ../include/module.h ../include/struct.h \
+ ../include/hash.h
+scr-bx.o: scr-bx.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircterm.h ../include/screen.h ../include/window.h \
+ ../include/lastlog.h ../include/translat.h ../include/screen.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/modval.h ../include/module.h
+screen.o: screen.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/commands.h ../include/screen.h ../include/window.h \
+ ../include/lastlog.h ../include/status.h ../include/window.h \
+ ../include/output.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/list.h ../include/ircterm.h \
+ ../include/screen.h ../include/translat.h ../include/names.h \
+ ../include/ircaux.h ../include/input.h ../include/log.h \
+ ../include/hook.h ../include/exec.h ../include/newio.h ../include/misc.h \
+ ../include/cset.h ../include/tcl_bx.h ../include/gui.h \
+ ../include/modval.h ../include/module.h ../include/translat.h
+server.o: server.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/parse.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/commands.h ../include/ircaux.h \
+ ../include/input.h ../include/who.h ../include/lastlog.h \
+ ../include/exec.h ../include/window.h ../include/output.h \
+ ../include/names.h ../include/hook.h ../include/vars.h ../include/cset.h \
+ ../include/hash2.h ../include/whowas.h ../include/screen.h \
+ ../include/notify.h ../include/misc.h ../include/status.h \
+ ../include/list.h ../include/modval.h ../include/module.h
+stack.o: stack.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/stack.h \
+ ../include/hook.h ../include/alias.h ../include/window.h \
+ ../include/lastlog.h ../include/hook.h ../include/ircaux.h \
+ ../include/output.h ../include/list.h ../include/misc.h \
+ ../include/modval.h ../include/module.h
+status.o: status.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircterm.h ../include/screen.h ../include/window.h \
+ ../include/lastlog.h ../include/translat.h ../include/status.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/hook.h ../include/input.h ../include/commands.h \
+ ../include/window.h ../include/screen.h ../include/mail.h \
+ ../include/output.h ../include/names.h ../include/ircaux.h \
+ ../include/misc.h ../include/notify.h ../include/hash2.h \
+ ../include/whowas.h ../include/cset.h ../include/translat.h \
+ ../include/modval.h ../include/module.h
+struct.o: struct.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/hash.h \
+ ../include/hash2.h ../include/struct.h ../include/whowas.h \
+ ../include/misc.h ../include/names.h ../include/window.h \
+ ../include/lastlog.h ../include/window.h ../include/server.h \
+ ../include/who.h ../include/names.h ../include/notify.h \
+ ../include/alist.h ../include/ircaux.h ../include/modval.h \
+ ../include/module.h
+tcl.o: tcl.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/parse.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/window.h ../include/lastlog.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/chelp.h ../include/commands.h \
+ ../include/vars.h ../include/cset.h ../include/ircaux.h \
+ ../include/lastlog.h ../include/window.h ../include/screen.h \
+ ../include/who.h ../include/hook.h ../include/input.h \
+ ../include/ignore.h ../include/keys.h ../include/names.h \
+ ../include/alias.h ../include/history.h ../include/funny.h \
+ ../include/ctcp.h ../include/dcc.h ../include/output.h ../include/exec.h \
+ ../include/notify.h ../include/status.h ../include/if.h \
+ ../include/help.h ../include/stack.h ../include/hook.h \
+ ../include/alias.h ../include/queue.h ../include/timer.h \
+ ../include/list.h ../include/userlist.h ../include/misc.h \
+ ../include/whowas.h ../include/hash2.h ../include/whowas.h \
+ ../include/tcl_bx.h ../include/modval.h ../include/module.h
+tcl_public.o: tcl_public.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/ircaux.h ../include/irc.h \
+ ../include/struct.h ../include/hash.h ../include/commands.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/struct.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/tcl_bx.h ../include/misc.h \
+ ../include/userlist.h ../include/output.h ../include/log.h \
+ ../include/dcc.h ../include/timer.h ../include/modval.h \
+ ../include/module.h
+term.o: term.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/ircterm.h ../include/screen.h \
+ ../include/translat.h ../include/window.h ../include/output.h \
+ ../include/translat.h ../include/modval.h ../include/module.h
+timer.o: timer.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/lastlog.h ../include/window.h \
+ ../include/lastlog.h ../include/timer.h ../include/hook.h \
+ ../include/output.h ../include/commands.h ../include/misc.h \
+ ../include/vars.h ../include/cset.h ../include/struct.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/window.h ../include/notify.h ../include/alist.h \
+ ../include/ircaux.h ../include/screen.h ../include/tcl_bx.h \
+ ../include/modval.h ../include/module.h
+translat.o: translat.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/vars.h ../include/cset.h ../include/struct.h \
+ ../include/translat.h ../include/ircaux.h ../include/window.h \
+ ../include/lastlog.h ../include/screen.h ../include/window.h \
+ ../include/output.h ../include/hebrew.h ../include/modval.h \
+ ../include/module.h digraph.inc
+user.o: user.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/list.h ../include/hash.h \
+ ../include/userlist.h ../include/misc.h ../include/output.h \
+ ../include/modval.h ../include/module.h ../include/struct.h
+userlist.o: userlist.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/window.h ../include/lastlog.h ../include/struct.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/commands.h ../include/vars.h ../include/cset.h \
+ ../include/ircaux.h ../include/lastlog.h ../include/window.h \
+ ../include/screen.h ../include/who.h ../include/hook.h \
+ ../include/input.h ../include/ignore.h ../include/keys.h \
+ ../include/names.h ../include/alias.h ../include/history.h \
+ ../include/funny.h ../include/dcc.h ../include/output.h \
+ ../include/exec.h ../include/notify.h ../include/status.h \
+ ../include/list.h ../include/timer.h ../include/whowas.h \
+ ../include/misc.h ../include/userlist.h ../include/parse.h \
+ ../include/hash2.h ../include/whowas.h ../include/cset.h \
+ ../include/modval.h ../include/module.h
+vars.o: vars.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/status.h ../include/window.h ../include/lastlog.h \
+ ../include/lastlog.h ../include/log.h ../include/history.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/vars.h ../include/cset.h ../include/struct.h \
+ ../include/input.h ../include/ircaux.h ../include/who.h \
+ ../include/ircterm.h ../include/screen.h ../include/window.h \
+ ../include/translat.h ../include/output.h ../include/screen.h \
+ ../include/list.h ../include/server.h ../include/who.h \
+ ../include/names.h ../include/notify.h ../include/misc.h \
+ ../include/stack.h ../include/hook.h ../include/alias.h \
+ ../include/alist.h ../include/hash2.h ../include/whowas.h \
+ ../include/cset.h ../include/module.h ../include/tcl_bx.h \
+ ../include/color.h ../include/translat.h ../include/modval.h \
+ ../include/module.h
+who.o: who.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/commands.h ../include/ircaux.h ../include/who.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/window.h ../include/lastlog.h ../include/struct.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/window.h ../include/vars.h ../include/cset.h \
+ ../include/hook.h ../include/output.h ../include/numbers.h \
+ ../include/parse.h ../include/if.h ../include/names.h ../include/misc.h \
+ ../include/modval.h ../include/module.h
+whowas.o: whowas.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/ircaux.h \
+ ../include/window.h ../include/lastlog.h ../include/who.h \
+ ../include/hook.h ../include/input.h ../include/names.h \
+ ../include/window.h ../include/alias.h ../include/output.h \
+ ../include/status.h ../include/screen.h ../include/commands.h \
+ ../include/config.h ../include/list.h ../include/userlist.h \
+ ../include/misc.h ../include/hash.h ../include/hash2.h \
+ ../include/whowas.h ../include/modval.h ../include/module.h \
+ ../include/whowas.h
+winbitchx.o: winbitchx.c ../include/input.h
+window.o: window.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/commands.h ../include/exec.h ../include/window.h \
+ ../include/vars.h ../include/cset.h ../include/struct.h \
+ ../include/server.h ../include/who.h ../include/names.h \
+ ../include/notify.h ../include/alist.h ../include/ircaux.h \
+ ../include/list.h ../include/ircterm.h ../include/screen.h \
+ ../include/translat.h ../include/names.h ../include/ircaux.h \
+ ../include/input.h ../include/status.h ../include/output.h \
+ ../include/log.h ../include/hook.h ../include/misc.h ../include/cset.h \
+ ../include/module.h ../include/gui.h ../include/modval.h \
+ ../include/module.h
+words.o: words.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/ircaux.h ../include/irc.h ../include/modval.h \
+ ../include/module.h ../include/struct.h ../include/hash.h
+wserv.o: wserv.c ../include/defs.h ../include/config.h ../include/defs.h \
+ ../include/../.config.h ../include/irc.h ../include/config.h \
+ ../include/bsdglob.h ../include/irc_std.h ../include/debug.h \
+ ../include/newio.h ../include/ssl.h ../include/struct.h ../include/irc.h \
+ ../include/hash.h ../include/ircterm.h ../include/screen.h \
+ ../include/window.h ../include/lastlog.h ../include/translat.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/modval.h ../include/module.h
+X.o: X.c
+wterm.o: term.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/ircterm.h ../include/screen.h \
+ ../include/window.h ../include/output.h ../include/translat.h \
+ ../include/modval.h ../include/module.h
+wnetwork.o: network.c ../include/irc.h ../include/defs.h \
+ ../include/config.h ../include/../.config.h ../include/bsdglob.h \
+ ../include/irc_std.h ../include/debug.h ../include/newio.h \
+ ../include/ssl.h ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/ircaux.h ../include/output.h ../include/vars.h \
+ ../include/cset.h ../include/struct.h ../include/modval.h \
+ ../include/module.h
+sterm.o: term.c ../include/irc.h ../include/defs.h ../include/config.h \
+ ../include/../.config.h ../include/bsdglob.h ../include/irc_std.h \
+ ../include/debug.h ../include/newio.h ../include/ssl.h \
+ ../include/struct.h ../include/irc.h ../include/hash.h \
+ ../include/screen.h ../include/window.h ../include/lastlog.h \
+ ../include/ircaux.h ../include/vars.h ../include/cset.h \
+ ../include/struct.h ../include/ircterm.h ../include/screen.h \
+ ../include/translat.h ../include/window.h ../include/output.h \
+ ../include/translat.h ../include/modval.h ../include/module.h
